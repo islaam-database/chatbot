@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Google.Apis.Dialogflow.v2.Data;
+using Google.Apis;
 using islaam_db_client;
 
 namespace IslaamDatabase
@@ -19,9 +20,11 @@ namespace IslaamDatabase
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
+            string googleApiKey = req.Query["google-api-key"];
+            if (googleApiKey == null) return new BadRequestObjectResult("Missing 'google-api-key' as a parameter");
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var fulfillmentRequest = JsonConvert.DeserializeObject<GoogleCloudDialogflowV2WebhookRequest>(requestBody);
-            var idb = new IslaamDBClient(SECRETS.API_KEY);
+            var idb = new IslaamDBClient(googleApiKey);
             string textResponse;
             switch (fulfillmentRequest.QueryResult.Intent.DisplayName)
             {
@@ -36,10 +39,7 @@ namespace IslaamDatabase
             }
 
             var response = new GoogleCloudDialogflowV2WebhookResponse { FulfillmentText = textResponse };
-
-            return fulfillmentRequest != null
-                ? (ActionResult)new OkObjectResult(response)
-                : new BadRequestObjectResult("GIT: Please pass a name on the query string or in the request body");
+            return new OkObjectResult(response);
         }
     }
 }
