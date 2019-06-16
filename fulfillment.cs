@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,8 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Google.Apis.Dialogflow.v2.Data;
-using Google.Apis;
 using islaam_db_client;
+using System.Linq;
 
 namespace IslaamDatabase
 {
@@ -32,15 +31,14 @@ namespace IslaamDatabase
                     var query = fulfillmentRequest.QueryResult.Parameters["person"].ToString();
                     var searchResult = idb.PersonAPI.Search(query);
                     var person = searchResult[0];
+                    var praises = idb.PraisesAPI
+                        .GetData()
+                        .Where(p => p.recommendeeId == person.id)
+                        .Select(p => p.title)
+                        .Distinct();
 
                     // create response
-                    textResponse = searchResult[0].name + ".";
-                    if (person.kunya != null) textResponse += $" He is {person.kunya}.";
-                    if (person.birthYear != null) textResponse += $" He was born in the year {person.birthYear}.";
-                    if (person.deathYear != null) textResponse += $" He passed away in the year {person.deathYear}.";
-                    if (person.birthYear != null && person.deathYear != null) textResponse += " Corresponding to the Hijri calendar.";
-                    if (person.location != null) textResponse += $" He is from {person.location}.";
-                    if (person.source != null) textResponse += $" Some or all of this information was gathered from ${person.source}";
+                    textResponse = person.BioIntro(idb);
                     break;
                 default:
                     textResponse = "Huh?";
