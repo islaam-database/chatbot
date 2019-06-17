@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Google.Apis.Dialogflow.v2.Data;
 using islaam_db_client;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace IslaamDatabase
 {
@@ -24,7 +25,7 @@ namespace IslaamDatabase
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var fulfillmentRequest = JsonConvert.DeserializeObject<GoogleCloudDialogflowV2WebhookRequest>(requestBody);
             var idb = new IslaamDBClient(googleApiKey);
-            string textResponse;
+            var responseObj = new List<string>() { };
             switch (fulfillmentRequest.QueryResult.Intent.DisplayName)
             {
                 case "who-is":
@@ -38,14 +39,25 @@ namespace IslaamDatabase
                         .Distinct();
 
                     // create response
-                    textResponse = person.BioIntro(idb);
+                    responseObj.Add(person.name);
+                    responseObj.Add(person.BioIntro(idb));
                     break;
                 default:
-                    textResponse = "Huh?";
+                    responseObj = new List<string> { "Huh?" };
                     break;
             }
 
-            var response = new GoogleCloudDialogflowV2WebhookResponse { FulfillmentText = textResponse };
+            var response = new GoogleCloudDialogflowV2WebhookResponse
+            {
+                FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
+                {
+                    new GoogleCloudDialogflowV2IntentMessage(){
+                        Text = new GoogleCloudDialogflowV2IntentMessageText(){
+                            Text = responseObj
+                        }
+                    }
+                }
+            };
             return new OkObjectResult(response);
         }
     }
