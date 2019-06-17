@@ -32,11 +32,6 @@ namespace IslaamDatabase
                     var query = fulfillmentRequest.QueryResult.Parameters["person"].ToString();
                     var searchResult = idb.PersonAPI.Search(query);
                     var person = searchResult[0];
-                    var praises = idb.PraisesAPI
-                        .GetData()
-                        .Where(p => p.recommendeeId == person.id)
-                        .Select(p => p.title)
-                        .Distinct();
 
                     // create response
                     responseObj.Add(person.name);
