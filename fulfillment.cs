@@ -34,7 +34,7 @@ namespace IslaamDatabase
                     var person = searchResult[0];
 
                     // create response
-                    responseObj.Add(person.name);
+                    responseObj.Add($"{person.name}.");
                     responseObj.Add(person.BioIntro(idb));
                     break;
                 default:
@@ -44,6 +44,7 @@ namespace IslaamDatabase
 
             var response = new GoogleCloudDialogflowV2WebhookResponse
             {
+                FulfillmentText = string.Join(" ", responseObj),
                 FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
                 {
                     new GoogleCloudDialogflowV2IntentMessage(){
