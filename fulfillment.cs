@@ -43,11 +43,11 @@ namespace IslaamDatabase
                         FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
                         {
                             new GoogleCloudDialogflowV2IntentMessage(){
-                                BasicCard = new GoogleCloudDialogflowV2IntentMessageBasicCard(){
-                                    FormattedText = responseAsText,
-                                    Title = person.name,
-                                    Subtitle = person.kunya,
-                                },
+                                // BasicCard = new GoogleCloudDialogflowV2IntentMessageBasicCard(){
+                                //     FormattedText = responseAsText,
+                                //     Title = person.name,
+                                //     Subtitle = person.kunya,
+                                // },
                                 SimpleResponses = new GoogleCloudDialogflowV2IntentMessageSimpleResponses(){
                                     SimpleResponses = new List<GoogleCloudDialogflowV2IntentMessageSimpleResponse>{
                                         new GoogleCloudDialogflowV2IntentMessageSimpleResponse(){
