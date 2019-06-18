@@ -36,25 +36,27 @@ namespace IslaamDatabase
                     // create response
                     responseObj.Add($"{person.name}.");
                     responseObj.Add(person.BioIntro(idb));
-                    break;
-                default:
-                    responseObj = new List<string> { "Huh?" };
-                    break;
-            }
-
-            var response = new GoogleCloudDialogflowV2WebhookResponse
-            {
-                FulfillmentText = string.Join(" ", responseObj),
-                FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
-                {
-                    new GoogleCloudDialogflowV2IntentMessage(){
-                        Text = new GoogleCloudDialogflowV2IntentMessageText(){
-                            Text = responseObj
+                    var responseAsText = string.Join(" ", responseObj);
+                    var response = new GoogleCloudDialogflowV2WebhookResponse
+                    {
+                        FulfillmentText = responseAsText,
+                        FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
+                        {
+                            new GoogleCloudDialogflowV2IntentMessage(){
+                                Text = new GoogleCloudDialogflowV2IntentMessageText(){
+                                    Text = responseObj
+                                },
+                                BasicCard = new GoogleCloudDialogflowV2IntentMessageBasicCard(){
+                                    FormattedText = responseAsText,
+                                    Title = person.name,
+                                    Subtitle = person.kunya
+                                }
+                            }
                         }
-                    }
-                }
-            };
-            return new OkObjectResult(response);
+                    };
+                    return new OkObjectResult(response);
+            }
+            return new OkObjectResult(new GoogleCloudDialogflowV2WebhookResponse { FulfillmentText = "Huh?" });
         }
     }
 }
