@@ -43,9 +43,6 @@ namespace IslaamDatabase
                         FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
                         {
                             new GoogleCloudDialogflowV2IntentMessage(){
-                                Text = new GoogleCloudDialogflowV2IntentMessageText(){
-                                    Text = responseObj
-                                },
                                 BasicCard = new GoogleCloudDialogflowV2IntentMessageBasicCard(){
                                     FormattedText = responseAsText,
                                     Title = person.name,
