@@ -47,9 +47,16 @@ namespace IslaamDatabase
                                     FormattedText = responseAsText,
                                     Title = person.name,
                                     Subtitle = person.kunya,
-
+                                },
+                                SimpleResponses = new GoogleCloudDialogflowV2IntentMessageSimpleResponses(){
+                                    SimpleResponses = new List<GoogleCloudDialogflowV2IntentMessageSimpleResponse>{
+                                        new GoogleCloudDialogflowV2IntentMessageSimpleResponse(){
+                                            DisplayText= responseAsText,
+                                            TextToSpeech = "This is sample speech",
+                                        }
+                                    }
                                 }
-                            }
+                            },
                         }
                     };
                     return new OkObjectResult(response);
