@@ -39,7 +39,7 @@ namespace IslaamDatabase
                     var responseAsText = string.Join(" ", responseObj);
                     var response = new GoogleCloudDialogflowV2WebhookResponse
                     {
-                        FulfillmentText = responseAsText,
+                        // FulfillmentText = responseAsText,
                         FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
                         {
                             new GoogleCloudDialogflowV2IntentMessage(){
