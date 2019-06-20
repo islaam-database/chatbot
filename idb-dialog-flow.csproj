@@ -5,7 +5,7 @@
     <RootNamespace>idb_dialog_flow</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="IslaamDBClient" Version="0.0.6" />
+    <PackageReference Include="IslaamDBClient" Version="0.0.7" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.29" />
     <PackageReference Include="Google.Apis.Dialogflow.v2" Version="1.40.2.1612" />
     <PackageReference Include="Google.Apis" Version="1.40.2" />

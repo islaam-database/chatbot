@@ -21,45 +21,44 @@ namespace IslaamDatabase
             ILogger log)
         {
             string googleApiKey = req.Query["google-api-key"];
-            if (googleApiKey == null) return new BadRequestObjectResult("Missing 'google-api-key' as a parameter");
+            if (googleApiKey == null) return new BadRequestObjectResult("Missing 'google-api-key' as a parameter.");
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var fulfillmentRequest = JsonConvert.DeserializeObject<GoogleCloudDialogflowV2WebhookRequest>(requestBody);
             var idb = new IslaamDBClient(googleApiKey);
             var responseObj = new List<string>() { };
             switch (fulfillmentRequest.QueryResult.Intent.DisplayName)
             {
-                case "who-is":
-                    var query = fulfillmentRequest.QueryResult.Parameters["person"].ToString();
-                    var searchResult = idb.PersonAPI.Search(query);
-                    var person = searchResult[0];
-
-                    // create response
-                    responseObj.Add($"{person.name}.");
-                    responseObj.Add(person.BioIntro(idb));
-                    var responseAsText = string.Join(" ", responseObj);
-                    var response = new GoogleCloudDialogflowV2WebhookResponse
+                case "get-teachers":
                     {
-                        FulfillmentText = responseAsText,
-                        FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
+                        var query = fulfillmentRequest.QueryResult.Parameters["person"].ToString();
+                        var searchResult = idb.PersonAPI.Search(query);
+                        var person = searchResult[0];
+                        var teachers = idb.StudentsAPI
+                            .GetData()
+                            .Where(s => s.studentId == person.id)
+                            .Select(s => s.teacherName)
+                            .ToList();
+                        var response = teachers.Count > 0
+                            ? $"{person.name}'s teachers include: \n\n {string.Join(", ", teachers)}"
+                            : $"Sorry. I don't know of any teachers of {person.name} at the moment.";
+                        return new OkObjectResult(new GoogleCloudDialogflowV2WebhookResponse { FulfillmentText = response });
+                    }
+                case "who-is":
+                    {
+                        var query = fulfillmentRequest.QueryResult.Parameters["person"].ToString();
+                        var searchResult = idb.PersonAPI.Search(query);
+                        var person = searchResult[0];
+
+                        // create response
+                        responseObj.Add($"{person.name}.");
+                        responseObj.Add(person.BioIntro(idb));
+                        var responseAsText = string.Join(" ", responseObj);
+                        var response = new GoogleCloudDialogflowV2WebhookResponse
                         {
-                            new GoogleCloudDialogflowV2IntentMessage(){
-                                // BasicCard = new GoogleCloudDialogflowV2IntentMessageBasicCard(){
-                                //     FormattedText = responseAsText,
-                                //     Title = person.name,
-                                //     Subtitle = person.kunya,
-                                // },
-                                SimpleResponses = new GoogleCloudDialogflowV2IntentMessageSimpleResponses(){
-                                    SimpleResponses = new List<GoogleCloudDialogflowV2IntentMessageSimpleResponse>{
-                                        new GoogleCloudDialogflowV2IntentMessageSimpleResponse(){
-                                            DisplayText= responseAsText,
-                                            TextToSpeech = "This is sample speech",
-                                        }
-                                    }
-                                }
-                            },
-                        }
-                    };
-                    return new OkObjectResult(response);
+                            FulfillmentText = responseAsText,
+                        };
+                        return new OkObjectResult(response);
+                    }
             }
             return new OkObjectResult(new GoogleCloudDialogflowV2WebhookResponse { FulfillmentText = "Huh?" });
         }
