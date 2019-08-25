@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "idb-dialog-flow", "idb-dialog-flow.csproj", "{DFB4EC74-C912-474C-A461-302B397DE695}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "islaam-db-client", "..\islaam-db-client\islaam-db-client\islaam-db-client.csproj", "{13A06195-9AEC-4421-B43B-72077C4AE007}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +15,9 @@ Global
 		{DFB4EC74-C912-474C-A461-302B397DE695}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFB4EC74-C912-474C-A461-302B397DE695}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFB4EC74-C912-474C-A461-302B397DE695}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13A06195-9AEC-4421-B43B-72077C4AE007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13A06195-9AEC-4421-B43B-72077C4AE007}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13A06195-9AEC-4421-B43B-72077C4AE007}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13A06195-9AEC-4421-B43B-72077C4AE007}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
