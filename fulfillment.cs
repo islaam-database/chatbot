@@ -42,7 +42,8 @@ namespace IslaamDatabase
             if (searchResults.Count == 0)
             {
                 return new OkObjectResult(
-                    new GoogleCloudDialogflowV2WebhookResponse {
+                    new GoogleCloudDialogflowV2WebhookResponse
+                    {
                         FulfillmentText = $"Sorry. I couldn't find anyone named {query}.",
                     }
                 );
@@ -55,9 +56,15 @@ namespace IslaamDatabase
             {
                 case "who-is":
                     {
+                        var bio = person.GetBio(idb);
+                        var textResponse = bio.info;
+                        if (bio.amountOfInfo <= 2)
+                        {
+                            textResponse += " That's all the information I have at the moment.";
+                        }
                         var response = new GoogleCloudDialogflowV2WebhookResponse
                         {
-                            FulfillmentText = person.BioIntro(idb),
+                            FulfillmentText = textResponse,
                         };
                         return new OkObjectResult(response);
                     }
