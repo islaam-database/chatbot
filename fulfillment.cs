@@ -55,21 +55,15 @@ namespace IslaamDatabase
             {
                 case "who-is":
                     {
-                        responseObj.Add(person.BioIntro(idb));
-                        var responseAsText = string.Join(" ", responseObj);
                         var response = new GoogleCloudDialogflowV2WebhookResponse
                         {
-                            FulfillmentText = responseAsText,
+                            FulfillmentText = person.BioIntro(idb),
                         };
                         return new OkObjectResult(response);
                     }
                 case "get-teachers":
                     {
-                        var teachers = idb.StudentsAPI
-                            .GetData()
-                            .Where(s => s.studentId == person.id)
-                            .Select(s => s.teacherName)
-                            .ToList();
+                        List<string> teachers = GetTeachers(idb, person);
                         var response = teachers.Count > 0
                             ? $"{person.name}'s teachers include: \n\n {string.Join(", ", teachers)}"
                             : $"Sorry. I don't know of any teachers of {person.name} at the moment.";
@@ -77,6 +71,15 @@ namespace IslaamDatabase
                     }
             }
             return new OkObjectResult(new GoogleCloudDialogflowV2WebhookResponse { FulfillmentText = "Huh?" });
+        }
+
+        private static List<string> GetTeachers(IslaamDBClient idb, Person person)
+        {
+            return idb.StudentsAPI
+                .GetData()
+                .Where(s => s.studentId == person.id)
+                .Select(s => s.teacherName)
+                .ToList();
         }
     }
 }
