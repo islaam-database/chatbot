@@ -10,6 +10,7 @@ using Google.Apis.Dialogflow.v2.Data;
 using islaam_db_client;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Build.Framework;
 
 namespace IslaamDatabase
 {
@@ -19,8 +20,7 @@ namespace IslaamDatabase
 
         [FunctionName("fulfillment")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
         {
             var googleApiKey = (string)req.Query["google-api-key"];
             if (googleApiKey == null)
@@ -57,14 +57,44 @@ namespace IslaamDatabase
                 case "who-is":
                     {
                         var bio = person.GetBio(idb);
-                        var textResponse = bio.info;
+                        var textResponse = bio.text;
                         if (bio.amountOfInfo <= 2)
                         {
                             textResponse += " That's all the information I have at the moment.";
                         }
                         var response = new GoogleCloudDialogflowV2WebhookResponse
                         {
-                            FulfillmentText = textResponse,
+                            FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
+                            {
+                                // facebook
+                                new GoogleCloudDialogflowV2IntentMessage
+                                {
+                                    Platform = "FACEBOOK",
+                                    Suggestions = new GoogleCloudDialogflowV2IntentMessageSuggestions
+                                    {
+                                        Suggestions = new List<GoogleCloudDialogflowV2IntentMessageSuggestion>
+                                        {
+                                            new GoogleCloudDialogflowV2IntentMessageSuggestion
+                                            {
+                                                Title = "Suggestion 1"
+                                            },
+                                            new GoogleCloudDialogflowV2IntentMessageSuggestion
+                                            {
+                                                Title = "Suggestion 2"
+                                            },
+                                        }
+                                    }
+                                },
+                                // web
+                                new GoogleCloudDialogflowV2IntentMessage
+                                {
+                                    Platform = null,
+                                    Text = new GoogleCloudDialogflowV2IntentMessageText
+                                    {
+                                        Text = new List<string>{ textResponse },
+                                    }
+                                },
+                            }
                         };
                         return new OkObjectResult(response);
                     }
