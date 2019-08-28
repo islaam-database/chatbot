@@ -11,6 +11,9 @@ using islaam_db_client;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Build.Framework;
+using System.Globalization;
+using System;
+using idb_dialog_flow;
 
 namespace IslaamDatabase
 {
@@ -34,28 +37,51 @@ namespace IslaamDatabase
 
             var searchResults = idb.PersonAPI
                 .Search(query)
-                .FindAll(x => x.lavDistance <= MAX_DIFF_FOR_SEARCH_RESULTS)
                 .OrderBy(x => x.lavDistance)
                 .ToList();
-
-            // if no search results
-            if (searchResults.Count == 0)
-            {
-                return new OkObjectResult(
-                    new GoogleCloudDialogflowV2WebhookResponse
-                    {
-                        FulfillmentText = $"Sorry. I couldn't find anyone named {query}.",
-                    }
-                );
-            }
-
-            var person = searchResults[0].person;
+            var possibleResults = searchResults.Take(4);
+            var acceptableResults = searchResults
+                    .FindAll(x => x.lavDistance <= MAX_DIFF_FOR_SEARCH_RESULTS);
+            var person = acceptableResults.FirstOrDefault()?.person;
             var intent = fulfillmentRequest.QueryResult.Intent.DisplayName;
 
+            // if person found
             switch (intent)
             {
                 case "who-is":
                     {
+                        // if no search results
+                        if (person == null)
+                        {
+                            var firstNameCapitalized = new CultureInfo("en-US", false).TextInfo.ToTitleCase(query);
+                            return new OkObjectResult(
+                                new GoogleCloudDialogflowV2WebhookResponse
+                                {
+                                    FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
+                                    {
+                                new GoogleCloudDialogflowV2IntentMessage
+                                {
+                                    Platform = "FACEBOOK",
+                                    QuickReplies = new GoogleCloudDialogflowV2IntentMessageQuickReplies
+                                    {
+                                        Title = NO_PERSON_FOUND_MESSAGE(firstNameCapitalized),
+                                        QuickReplies = possibleResults
+                                            .Select(p => Intents.WHO_IS.DefaultResponse(p.person))
+                                            .ToList()
+                                    }
+                                },
+                                new GoogleCloudDialogflowV2IntentMessage
+                                    {
+                                        Platform = null,
+                                        Text = new GoogleCloudDialogflowV2IntentMessageText
+                                        {
+                                            Text = new List<string>{ NO_PERSON_FOUND_MESSAGE(firstNameCapitalized) },
+                                        }
+                                    },
+                                        }
+                                }
+                            );
+                        }
                         var bio = person.GetBio(idb);
                         var textResponse = bio.text;
                         if (bio.amountOfInfo <= 2)
@@ -70,20 +96,15 @@ namespace IslaamDatabase
                                 new GoogleCloudDialogflowV2IntentMessage
                                 {
                                     Platform = "FACEBOOK",
-                                    Suggestions = new GoogleCloudDialogflowV2IntentMessageSuggestions
+                                    QuickReplies = new GoogleCloudDialogflowV2IntentMessageQuickReplies
                                     {
-                                        Suggestions = new List<GoogleCloudDialogflowV2IntentMessageSuggestion>
+                                        QuickReplies = new string[]
                                         {
-                                            new GoogleCloudDialogflowV2IntentMessageSuggestion
-                                            {
-                                                Title = "Suggestion 1"
-                                            },
-                                            new GoogleCloudDialogflowV2IntentMessageSuggestion
-                                            {
-                                                Title = "Suggestion 2"
-                                            },
-                                        }
-                                    }
+                                            "test",
+                                            "test2"
+                                        },
+                                        Title = textResponse
+                                    },
                                 },
                                 // web
                                 new GoogleCloudDialogflowV2IntentMessage
@@ -108,6 +129,11 @@ namespace IslaamDatabase
                     }
             }
             return new OkObjectResult(new GoogleCloudDialogflowV2WebhookResponse { FulfillmentText = "Huh?" });
+        }
+
+        private static string NO_PERSON_FOUND_MESSAGE(string query)
+        {
+            return $"Sorry. I couldn't find anyone named \"{query}\"";
         }
 
         private static List<string> GetTeachers(IslaamDBClient idb, Person person)
