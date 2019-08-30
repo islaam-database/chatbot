@@ -12,6 +12,10 @@ namespace idb_dialog_flow
             {
                 return $"Who is {p.name}?";
             }
+            public static string DefaultResponse(string personName)
+            {
+                return $"Who is {personName}?";
+            }
         }
     }
 }

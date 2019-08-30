@@ -26,19 +26,18 @@ namespace IslaamDatabase
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
         {
             var googleApiKey = (string)req.Query["google-api-key"];
+
+            // if no API KEY
             if (googleApiKey == null)
                 return new BadRequestObjectResult("Missing 'google-api-key' as a parameter.");
 
+            var idb = new IslaamDBClient(googleApiKey);
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var fulfillmentRequest = JsonConvert.DeserializeObject<GoogleCloudDialogflowV2WebhookRequest>(requestBody);
-            var idb = new IslaamDBClient(googleApiKey);
-            var responseObj = new List<string>() { };
-            var query = fulfillmentRequest.QueryResult.Parameters["person"].ToString();
 
-            var searchResults = idb.PersonAPI
-                .Search(query)
-                .OrderBy(x => x.lavDistance)
-                .ToList();
+            // get people
+            var query = fulfillmentRequest.QueryResult.Parameters["person"].ToString();
+            var searchResults = GetSearchResults(idb, query);
             var possibleResults = searchResults.Take(4);
             var acceptableResults = searchResults
                     .FindAll(x => x.lavDistance <= MAX_DIFF_FOR_SEARCH_RESULTS);
@@ -59,26 +58,26 @@ namespace IslaamDatabase
                                 {
                                     FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
                                     {
-                                new GoogleCloudDialogflowV2IntentMessage
-                                {
-                                    Platform = "FACEBOOK",
-                                    QuickReplies = new GoogleCloudDialogflowV2IntentMessageQuickReplies
-                                    {
-                                        Title = NO_PERSON_FOUND_MESSAGE(firstNameCapitalized),
-                                        QuickReplies = possibleResults
-                                            .Select(p => Intents.WHO_IS.DefaultResponse(p.person))
-                                            .ToList()
-                                    }
-                                },
-                                new GoogleCloudDialogflowV2IntentMessage
-                                    {
-                                        Platform = null,
-                                        Text = new GoogleCloudDialogflowV2IntentMessageText
+                                        new GoogleCloudDialogflowV2IntentMessage
                                         {
-                                            Text = new List<string>{ NO_PERSON_FOUND_MESSAGE(firstNameCapitalized) },
-                                        }
-                                    },
-                                        }
+                                            Platform = "FACEBOOK",
+                                            QuickReplies = new GoogleCloudDialogflowV2IntentMessageQuickReplies
+                                            {
+                                                Title = NO_PERSON_FOUND_MESSAGE(firstNameCapitalized),
+                                                QuickReplies = possibleResults
+                                                    .Select(p => Intents.WHO_IS.DefaultResponse(p.person))
+                                                    .ToList()
+                                            }
+                                        },
+                                        new GoogleCloudDialogflowV2IntentMessage
+                                        {
+                                            Platform = null,
+                                            Text = new GoogleCloudDialogflowV2IntentMessageText
+                                            {
+                                                Text = new List<string>{ NO_PERSON_FOUND_MESSAGE(firstNameCapitalized) },
+                                            }
+                                        },
+                                    }
                                 }
                             );
                         }
@@ -88,6 +87,9 @@ namespace IslaamDatabase
                         {
                             textResponse += " That's all the information I have at the moment.";
                         }
+                        var teachers = GetTeachers(idb, person);
+                        var students = GetStudents(idb, person);
+                        var QuickReplies = GetFivePeopleForSuggestions(teachers, students, searchResults);
                         var response = new GoogleCloudDialogflowV2WebhookResponse
                         {
                             FulfillmentMessages = new List<GoogleCloudDialogflowV2IntentMessage>
@@ -98,11 +100,7 @@ namespace IslaamDatabase
                                     Platform = "FACEBOOK",
                                     QuickReplies = new GoogleCloudDialogflowV2IntentMessageQuickReplies
                                     {
-                                        QuickReplies = new string[]
-                                        {
-                                            "test",
-                                            "test2"
-                                        },
+                                        QuickReplies = QuickReplies,
                                         Title = textResponse
                                     },
                                 },
@@ -119,16 +117,59 @@ namespace IslaamDatabase
                         };
                         return new OkObjectResult(response);
                     }
-                case "get-teachers":
-                    {
-                        List<string> teachers = GetTeachers(idb, person);
-                        var response = teachers.Count > 0
-                            ? $"{person.name}'s teachers include: \n\n {string.Join(", ", teachers)}"
-                            : $"Sorry. I don't know of any teachers of {person.name} at the moment.";
-                        return new OkObjectResult(new GoogleCloudDialogflowV2WebhookResponse { FulfillmentText = response });
-                    }
             }
             return new OkObjectResult(new GoogleCloudDialogflowV2WebhookResponse { FulfillmentText = "Huh?" });
+        }
+
+        private static List<PersonSearchResult> GetSearchResults(IslaamDBClient idb, string query)
+        {
+            return idb.PersonAPI
+                .Search(query)
+                .OrderBy(x => x.lavDistance)
+                .ToList();
+        }
+
+        private static List<string> GetFivePeopleForSuggestions(
+            List<string> teachers,
+            List<string> students,
+            List<PersonSearchResult> searchResults
+        )
+        {
+            var fivePeople = new List<string>();
+            var minGroupLength = Math.Min(teachers.Count, students.Count);
+            if (minGroupLength >= 2)
+            {
+                fivePeople = fivePeople.Concat(teachers.Take(2)).ToList(); // add 2 teachers
+                fivePeople = fivePeople.Concat(students.Take(2)).ToList(); // add 2 students
+            }
+            else
+            {
+                var sum = teachers.Count + students.Count;
+                if (sum >= 4)
+                {
+                    var minGroup = teachers.Count < students.Count ? teachers : students;
+                    var maxGroup = teachers.Count < students.Count ? students : teachers;
+                    fivePeople = fivePeople.Concat(minGroup).ToList(); // add small group
+                    var amountLeft = 4 - fivePeople.Count;
+                    fivePeople = fivePeople.Concat(maxGroup.Take(amountLeft)).ToList();
+                }
+                else
+                {
+                    fivePeople = fivePeople
+                        .Concat(teachers)
+                        .Concat(students)
+                        .ToList();
+                }
+            }
+            {
+                var amountLeft = 5 - fivePeople.Count;
+                var remainingPeople = searchResults
+                    .Take(amountLeft + 1)
+                    .Skip(1)
+                    .Select(sr => sr.person.friendlyName);
+                fivePeople = fivePeople.Concat(remainingPeople).ToList();
+            }
+            return fivePeople;
         }
 
         private static string NO_PERSON_FOUND_MESSAGE(string query)
@@ -142,6 +183,14 @@ namespace IslaamDatabase
                 .GetData()
                 .Where(s => s.studentId == person.id)
                 .Select(s => s.teacherName)
+                .ToList();
+        }
+        private static List<string> GetStudents(IslaamDBClient idb, Person person)
+        {
+            return idb.StudentsAPI
+                .GetData()
+                .Where(s => s.teacherId == person.id)
+                .Select(s => s.studentName)
                 .ToList();
         }
     }
