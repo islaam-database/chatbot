@@ -5,17 +5,9 @@ namespace idb_dialog_flow
 {
     public static class Intents
     {
-        public static class WHO_IS
-        {
-            public static string Name = "who-is";
-            public static string DefaultResponse(Person p)
-            {
-                return $"Who is {p.name}?";
-            }
-            public static string DefaultResponse(string personName)
-            {
-                return $"Who is {personName}?";
-            }
-        }
+        public static string WHO_IS = "who-is";
+
+        public static string GET_TEACHERS = "get-teachers";
     }
+
 }

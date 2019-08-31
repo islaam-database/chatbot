@@ -13,20 +13,17 @@ namespace idb_dialog_flow
         public abstract string Id { get; }
         public abstract string TextResponse { get; }
         public abstract List<string> QuickReplies { get; }
-        public HandlerLite PersonNotFoundHandler(string query, Func<string, string> formula, List<PersonSearchResult> searchResults)
-        {
-            return new HandlerLite
-            {
-                TextResponse = $"Sorry. I don't know anyone named \"{query}\"",
-                QuickReplies = searchResults
-                    .Select(x => formula(x.person.name))
-                    .ToList()
-            };
-        }
+        public string TAIKATM = "That's all I know at the moment.";
         public class HandlerLite
         {
             public string TextResponse;
             public List<string> QuickReplies;
+        }
+        public string FriendlyStringJoin(List<string> strings)
+        {
+            var firstPart = String.Join(", ", strings.SkipLast(1));
+            var lastPart = strings.Last();
+            return $"{firstPart} and {lastPart}";
         }
     }
 

@@ -26,4 +26,7 @@
   <ItemGroup>
     <Compile Remove="IHandler.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Handlers\" />
+  </ItemGroup>
 </Project>

@@ -3,34 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using islaam_db_client;
+using static idb_dialog_flow.Handler;
 
 namespace idb_dialog_flow
 {
-    public class WhoIsHandler : Handler
+    public class WhoIsHandler : SinglePersonHandler
     {
-        private readonly PersonHelper personHelper;
-        private readonly IslaamDBClient idb;
-        private readonly BioInfo bioInfo;
-
-        private string query;
-        private HandlerLite pnfHandler;
-        public override string Id
-        {
-            get
-            {
-                return "who-is";
-            }
-        }
+        public override string Id { get { return "who-is"; } }
+        public WhoIsHandler(IslaamDBClient idb, IDictionary<string, object> entities)
+            : base(idb, entities)
+        { }
 
         public override string TextResponse
         {
             get
             {
                 if (personHelper.person == null)
-                {
                     return $"Sorry. I couldn't find anyone named \"{personHelper.FirstNameCapitalized}\"";
+
+                var bio = personHelper.person.GetBio(idb);
+
+                if (bio.amountOfInfo <= 2)
+                {
+                    bio.text += " That's all the information I have at the moment.";
                 }
-                return personHelper.person.GetBio(idb).text;
+                return bio.text;
             }
         }
 
@@ -45,20 +42,18 @@ namespace idb_dialog_flow
                 var students = personHelper.GetStudents(teacherStudents);
                 var searchResults = personHelper.SearchResults;
 
-                return GetFivePeopleForSuggestions(teachers, students, searchResults);
+                return GetFivePeopleForSuggestions(teachers, students, searchResults)
+                    .Select(DefaultUtterance)
+                    .ToList();
             }
         }
-        public WhoIsHandler(IslaamDBClient idb, IDictionary entities)
-        {
-            this.idb = idb;
 
-            query = entities["person"].ToString();
-            personHelper = new PersonHelper(query, idb);
-            bioInfo = personHelper.person?.GetBio(idb);
-            pnfHandler = PersonNotFoundHandler(query, x => $"Who is {x}", personHelper.SearchResults);
+        public static string DefaultUtterance(string person)
+        {
+            return $"Who is {person}?";
         }
 
-        private static List<string> GetFivePeopleForSuggestions(
+        public static List<string> GetFivePeopleForSuggestions(
             List<string> teachers,
             List<string> students,
             List<PersonSearchResult> searchResults
