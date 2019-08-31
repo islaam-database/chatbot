@@ -47,6 +47,9 @@ namespace IslaamDatabase
             else if (intent == Intents.GET_TEACHERS)
                 handler = new GetTeachersHandler(idb, entities);
 
+            else if (intent == Intents.GET_STUDENTS)
+                handler = new GetStudentsHandler(idb, entities);
+
             else handler = new NotSupportedHandler();
 
             // if person found

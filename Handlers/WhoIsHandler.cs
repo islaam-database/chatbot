@@ -9,7 +9,6 @@ namespace idb_dialog_flow
 {
     public class WhoIsHandler : SinglePersonHandler
     {
-        public override string Id { get { return "who-is"; } }
         public WhoIsHandler(IslaamDBClient idb, IDictionary<string, object> entities)
             : base(idb, entities)
         { }

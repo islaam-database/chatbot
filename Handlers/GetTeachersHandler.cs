@@ -7,7 +7,6 @@ namespace IslaamDatabase
 {
     public class GetTeachersHandler : SinglePersonHandler
     {
-        public override string Id => Intents.GET_TEACHERS;
         private List<string> teacherNames;
 
         public GetTeachersHandler(IslaamDBClient idb, IDictionary<string, object> entities)
@@ -16,9 +15,6 @@ namespace IslaamDatabase
             this.idb = idb;
             var allStudentTeachers = idb.StudentsAPI.GetData();
             teacherNames = personHelper.GetTeachers(allStudentTeachers);
-            query = entities["person"].ToString();
-            personHelper = new PersonHelper(query, idb);
-            pnfHandler = PersonNotFoundHandler(query, x => $"{x}'s teachers", personHelper.SearchResults);
         }
 
         public override string TextResponse
@@ -44,6 +40,7 @@ namespace IslaamDatabase
                     .Concat(
                         personHelper
                             .SearchResults
+                            .Skip(1)
                             .Select(x => x.person.friendlyName)
                     )
                     .Take(5)
@@ -53,7 +50,7 @@ namespace IslaamDatabase
         }
         public static string DefaultUtterance(string person)
         {
-            return $"{person}'s teachers.";
+            return $"Who taught {person}?";
         }
     }
 }

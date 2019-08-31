@@ -10,7 +10,6 @@ namespace idb_dialog_flow
 {
     public abstract class Handler
     {
-        public abstract string Id { get; }
         public abstract string TextResponse { get; }
         public abstract List<string> QuickReplies { get; }
         public string TAIKATM = "That's all I know at the moment.";

@@ -5,13 +5,6 @@ namespace IslaamDatabase
 {
     public class NotSupportedHandler : Handler
     {
-        public override string Id
-        {
-            get
-            {
-                return "unsupported-intent";
-            }
-        }
 
         public override string TextResponse
         {
