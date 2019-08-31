@@ -19,7 +19,7 @@ namespace IslaamDatabase
 {
     public static class Fulfillment
     {
-        public static int MAX_DIFF_FOR_SEARCH_RESULTS = 5;
+        public static int MAX_DIST_FOR_SEARCH_RESULTS = 5;
 
         [FunctionName("fulfillment")]
         public static async Task<IActionResult> Run(
@@ -40,7 +40,7 @@ namespace IslaamDatabase
             var searchResults = GetSearchResults(idb, query);
             var possibleResults = searchResults.Take(4);
             var acceptableResults = searchResults
-                    .FindAll(x => x.lavDistance <= MAX_DIFF_FOR_SEARCH_RESULTS);
+                    .FindAll(x => x.lavDistance <= MAX_DIST_FOR_SEARCH_RESULTS);
             var person = acceptableResults.FirstOrDefault()?.person;
             var intent = fulfillmentRequest.QueryResult.Intent.DisplayName;
 
@@ -176,7 +176,6 @@ namespace IslaamDatabase
         {
             return $"Sorry. I couldn't find anyone named \"{query}\"";
         }
-
         private static List<string> GetTeachers(IslaamDBClient idb, Person person)
         {
             return idb.StudentsAPI
@@ -193,5 +192,6 @@ namespace IslaamDatabase
                 .Select(s => s.studentName)
                 .ToList();
         }
+
     }
 }
