@@ -5,15 +5,16 @@ using islaam_db_client;
 
 namespace IslaamDatabase
 {
-    public class GetStudentsHandler : SinglePersonHandler
+    public class GetPraiseesHandler : SinglePersonHandler
     {
-        private List<string> studentNames;
-        public GetStudentsHandler(IslaamDBClient idb, IDictionary<string, object> entities)
+        private readonly List<string> praiseeNames;
+
+        public GetPraiseesHandler(IslaamDBClient idb, IDictionary<string, object> entities)
             : base(idb, entities)
         {
             this.idb = idb;
-            var allStudentTeachers = idb.StudentsAPI.GetData();
-            studentNames = personHelper.GetStudentNames(allStudentTeachers);
+            var allPraises = idb.PraisesAPI.GetData();
+            praiseeNames = personHelper.GetPraiseeNames(allPraises);
         }
 
         public override string TextResponse
@@ -23,13 +24,13 @@ namespace IslaamDatabase
                 if (personHelper.person == null)
                     return PersonNotFoundHandler(DefaultUtterance).TextResponse;
 
-                if (studentNames.Count == 0)
-                    return $"Sorry. I currently don't have any information on {friendlyName}'s students.";
+                if (praiseeNames.Count == 0)
+                    return $"Sorry. I currently don't have any information on who {friendlyName} praised.";
 
-                if (studentNames.Count == 1)
-                    return $"{friendlyName} taught {studentNames[0]}. {TAIKATM}";
+                if (praiseeNames.Count == 1)
+                    return $"{friendlyName} praised {praiseeNames[0]}. {TAIKATM}";
 
-                return $"{friendlyName}'s students include {FriendlyStringJoin(studentNames)}.";
+                return $"{friendlyName} praised {FriendlyStringJoin(praiseeNames)}.";
             }
         }
 
@@ -42,11 +43,11 @@ namespace IslaamDatabase
 
                 var defaultQRs = new List<string>()
                 {
+                    $"{friendlyName}'s students",
                     $"{friendlyName}'s teachers",
                     $"Who praised {friendlyName}?",
-                    $"Who did {friendlyName} praised?",
                 };
-                var qrs = studentNames
+                var qrs = praiseeNames
                     .Concat(
                         personHelper
                             .SearchResults
@@ -60,7 +61,7 @@ namespace IslaamDatabase
         }
         public static string DefaultUtterance(string person)
         {
-            return $"{person}'s students";
+            return $"Who did {person} praise?";
         }
     }
 }

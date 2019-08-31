@@ -50,6 +50,12 @@ namespace IslaamDatabase
             else if (intent == Intents.GET_STUDENTS)
                 handler = new GetStudentsHandler(idb, entities);
 
+            else if (intent == Intents.GET_PRAISERS)
+                handler = new GetPraiseesHandler(idb, entities);
+
+            else if (intent == Intents.GET_PRAISEES)
+                handler = new GetPraiseesHandler(idb, entities);
+
             else handler = new NotSupportedHandler();
 
             // if person found

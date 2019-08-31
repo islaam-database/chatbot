@@ -11,7 +11,6 @@ namespace idb_dialog_flow
     {
         protected string query;
         protected PersonHelper personHelper;
-        protected HandlerLite pnfHandler;
         protected IslaamDBClient idb;
         protected string friendlyName;
 
@@ -20,19 +19,18 @@ namespace idb_dialog_flow
             this.idb = idb;
             query = entities["person"].ToString();
             personHelper = new PersonHelper(query, idb);
-            pnfHandler = PersonNotFoundHandler(query, x => $"Who is {x}", personHelper.SearchResults);
             if (personHelper.person != null)
             {
                 friendlyName = personHelper.person.friendlyName;
             }
         }
 
-        protected HandlerLite PersonNotFoundHandler(string query, Func<string, string> formula, List<PersonSearchResult> searchResults)
+        protected HandlerLite PersonNotFoundHandler(Func<string, string> formula)
         {
             return new HandlerLite
             {
-                TextResponse = $"Sorry. I don't know anyone named \"{query}\"",
-                QuickReplies = searchResults
+                TextResponse = $"Sorry. I don't know anyone named \"{friendlyName}.\"",
+                QuickReplies = personHelper.SearchResults
                     .Select(x => formula(x.person.name))
                     .ToList()
             };

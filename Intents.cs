@@ -10,6 +10,10 @@ namespace idb_dialog_flow
         public static string GET_TEACHERS = "get-teachers";
 
         public static string GET_STUDENTS = "get-students";
+
+        public static string GET_PRAISERS = "get-praisers";
+
+        public static string GET_PRAISEES = "get-praisees";
     }
 
 }

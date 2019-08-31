@@ -14,13 +14,15 @@ namespace IslaamDatabase
         {
             this.idb = idb;
             var allStudentTeachers = idb.StudentsAPI.GetData();
-            teacherNames = personHelper.GetTeachers(allStudentTeachers);
+            teacherNames = personHelper.GetTeacherNames(allStudentTeachers);
         }
 
         public override string TextResponse
         {
             get
             {
+                if (personHelper.person == null)
+                    return PersonNotFoundHandler(DefaultUtterance).TextResponse;
 
                 if (teacherNames.Count == 0)
                     return $"Sorry. I currently don't have any information on {friendlyName}'s teachers.";
@@ -36,6 +38,9 @@ namespace IslaamDatabase
         {
             get
             {
+                if (personHelper.person == null)
+                    return PersonNotFoundHandler(DefaultUtterance).QuickReplies;
+
                 var defaultQRs = new List<string>()
                 {
                     $"{friendlyName}'s students",

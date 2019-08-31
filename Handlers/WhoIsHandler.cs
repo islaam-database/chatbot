@@ -18,7 +18,7 @@ namespace idb_dialog_flow
             get
             {
                 if (personHelper.person == null)
-                    return $"Sorry. I couldn't find anyone named \"{personHelper.FirstNameCapitalized}\"";
+                    return PersonNotFoundHandler(DefaultUtterance).TextResponse;
 
                 var bio = personHelper.person.GetBio(idb);
 
@@ -34,11 +34,12 @@ namespace idb_dialog_flow
         {
             get
             {
-                if (personHelper.person == null) return pnfHandler.QuickReplies;
+                if (personHelper.person == null)
+                    return PersonNotFoundHandler(DefaultUtterance).QuickReplies;
 
                 var teacherStudents = idb.StudentsAPI.GetData();
-                var teachers = personHelper.GetTeachers(teacherStudents);
-                var students = personHelper.GetStudents(teacherStudents);
+                var teachers = personHelper.GetTeacherNames(teacherStudents);
+                var students = personHelper.GetStudentNames(teacherStudents);
                 var searchResults = personHelper.SearchResults;
 
                 return GetFivePeopleForSuggestions(teachers, students, searchResults)
