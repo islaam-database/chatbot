@@ -1,36 +1,40 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using islaam_db_client;
 
 public class PersonHelper
 {
     public const int MAX_LAV_DIST_FOR_SEARCH = 5;
-    public List<PersonSearchResult> searchResults;
+    public string FirstNameCapitalized;
+    public List<PersonSearchResult> SearchResults;
     public Person person;
     public PersonHelper(string query, IslaamDBClient idb)
     {
-        searchResults = idb.PersonAPI
+        FirstNameCapitalized = new CultureInfo("en-US", false).TextInfo.ToTitleCase(query);
+
+        SearchResults = idb.PersonAPI
             .Search(query)
             .OrderBy(x => x.lavDistance)
             .ToList();
 
-        person = searchResults
+        person = SearchResults
             .FindAll(x => x.lavDistance <= MAX_LAV_DIST_FOR_SEARCH)
             .FirstOrDefault()
             ?.person;
     }
 
-    public List<string> GetTeachers(List<Student> students)
+    public List<string> GetTeachers(List<Student> allStudents)
     {
-        var teacherNames = students
+        var teacherNames = allStudents
             .FindAll(s => s.studentId == person.id)
             .Select(x => x.teacherName)
             .ToList();
         return teacherNames;
     }
-    public List<string> GetStudents(List<Student> students)
+    public List<string> GetStudents(List<Student> allStudents)
     {
-        var studentNames = students
+        var studentNames = allStudents
             .FindAll(s => s.teacherId == person.id)
             .Select(x => x.studentName)
             .ToList();
