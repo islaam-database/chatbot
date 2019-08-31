@@ -34,7 +34,13 @@ namespace IslaamDatabase
         {
             get
             {
-                return studentNames
+                var defaultQRs = new List<string>()
+                {
+                    $"{friendlyName}'s teachers",
+                    $"Who praised {friendlyName}?",
+                    $"Who did {friendlyName} praised?",
+                };
+                var qrs = studentNames
                     .Concat(
                         personHelper
                             .SearchResults
@@ -42,8 +48,8 @@ namespace IslaamDatabase
                             .Select(x => x.person.friendlyName)
                     )
                     .Take(5)
-                    .Select(DefaultUtterance)
-                    .ToList();
+                    .Select(DefaultUtterance);
+                return defaultQRs.Concat(qrs).ToList();
             }
         }
         public static string DefaultUtterance(string person)
