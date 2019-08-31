@@ -51,7 +51,7 @@ namespace IslaamDatabase
                 handler = new GetStudentsHandler(idb, entities);
 
             else if (intent == Intents.GET_PRAISERS)
-                handler = new GetPraiseesHandler(idb, entities);
+                handler = new GetPraisersHandler(idb, entities);
 
             else if (intent == Intents.GET_PRAISEES)
                 handler = new GetPraiseesHandler(idb, entities);
