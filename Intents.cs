@@ -14,6 +14,8 @@ namespace idb_dialog_flow
         public static string GET_PRAISERS = "get-praisers";
 
         public static string GET_PRAISEES = "get-praisees";
+
+        public static string GET_DEATH_YEAR = "get-death-year";
     }
 
 }

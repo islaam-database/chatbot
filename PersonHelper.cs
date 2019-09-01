@@ -22,6 +22,8 @@ public class PersonHelper
             .FindAll(x => x.lavDistance <= MAX_LAV_DIST_FOR_SEARCH)
             .FirstOrDefault()
             ?.person;
+
+        SearchResults = SearchResults.Skip(1).ToList();
     }
 
     public List<string> GetTeacherNames(List<Student> allStudents)

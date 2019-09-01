@@ -38,25 +38,7 @@ namespace IslaamDatabase
             var fulfillmentRequest = JsonConvert.DeserializeObject<GoogleCloudDialogflowV2WebhookRequest>(requestBody);
             var intent = fulfillmentRequest.QueryResult.Intent.DisplayName;
             var entities = fulfillmentRequest.QueryResult.Parameters;
-            Handler handler;
-
-            // choose the correct handler
-            if (intent == Intents.WHO_IS)
-                handler = new WhoIsHandler(idb, entities);
-
-            else if (intent == Intents.GET_TEACHERS)
-                handler = new GetTeachersHandler(idb, entities);
-
-            else if (intent == Intents.GET_STUDENTS)
-                handler = new GetStudentsHandler(idb, entities);
-
-            else if (intent == Intents.GET_PRAISERS)
-                handler = new GetPraisersHandler(idb, entities);
-
-            else if (intent == Intents.GET_PRAISEES)
-                handler = new GetPraiseesHandler(idb, entities);
-
-            else handler = new NotSupportedHandler();
+            var handler = GetHandler(idb, intent, entities);
 
             // if person found
             var response = new GoogleCloudDialogflowV2WebhookResponse
@@ -87,5 +69,15 @@ namespace IslaamDatabase
             return new OkObjectResult(response);
         }
 
+        private static Handler GetHandler(IslaamDBClient idb, string intent, IDictionary<string, object> entities)
+        {
+            if (intent == Intents.WHO_IS) return new WhoIsHandler(idb, entities);
+            if (intent == Intents.GET_TEACHERS) return new GetTeachersHandler(idb, entities);
+            if (intent == Intents.GET_STUDENTS) return new GetStudentsHandler(idb, entities);
+            if (intent == Intents.GET_PRAISERS) return new GetPraisersHandler(idb, entities);
+            if (intent == Intents.GET_PRAISEES) return new GetPraiseesHandler(idb, entities);
+            if (intent == Intents.GET_DEATH_YEAR) return new GetDeathYearHandler(idb, entities);
+            return new NotSupportedHandler();
+        }
     }
 }

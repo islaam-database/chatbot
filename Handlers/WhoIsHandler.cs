@@ -18,7 +18,7 @@ namespace idb_dialog_flow
             get
             {
                 if (personHelper.person == null)
-                    return PersonNotFoundHandler(DefaultUtterance).TextResponse;
+                    return PnfHandler.TextResponse;
 
                 var bio = personHelper.person.GetBio(idb);
 
@@ -35,7 +35,7 @@ namespace idb_dialog_flow
             get
             {
                 if (personHelper.person == null)
-                    return PersonNotFoundHandler(DefaultUtterance).QuickReplies;
+                    return PnfHandler.QuickReplies;
 
                 var teacherStudents = idb.StudentsAPI.GetData();
                 var teachers = personHelper.GetTeacherNames(teacherStudents);
@@ -43,15 +43,12 @@ namespace idb_dialog_flow
                 var searchResults = personHelper.SearchResults;
 
                 return GetFivePeopleForSuggestions(teachers, students, searchResults)
-                    .Select(DefaultUtterance)
+                    .Select(Formula)
                     .ToList();
             }
         }
 
-        public static string DefaultUtterance(string person)
-        {
-            return $"Who is {person}?";
-        }
+        protected override Func<string, string> Formula => x => $"Who is {x}?";
 
         public static List<string> GetFivePeopleForSuggestions(
             List<string> teachers,
@@ -89,7 +86,6 @@ namespace idb_dialog_flow
                 var amountLeft = 5 - fivePeople.Count;
                 var remainingPeople = searchResults
                     .Take(amountLeft + 1)
-                    .Skip(1)
                     .Select(sr => sr.person.friendlyName);
                 fivePeople = fivePeople.Concat(remainingPeople).ToList();
             }

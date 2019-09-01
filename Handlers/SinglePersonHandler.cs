@@ -13,6 +13,7 @@ namespace idb_dialog_flow
         protected PersonHelper personHelper;
         protected IslaamDBClient idb;
         protected string friendlyName;
+        protected abstract Func<string, string> Formula { get; }
 
         protected SinglePersonHandler(IslaamDBClient idb, IDictionary<string, object> entities)
         {
@@ -25,15 +26,12 @@ namespace idb_dialog_flow
             }
         }
 
-        protected HandlerLite PersonNotFoundHandler(Func<string, string> formula)
+        protected HandlerLite PnfHandler => new HandlerLite
         {
-            return new HandlerLite
-            {
-                TextResponse = $"Sorry. I don't know anyone named \"{friendlyName}.\"",
-                QuickReplies = personHelper.SearchResults
-                    .Select(x => formula(x.person.name))
+            TextResponse = $"Sorry. I don't know anyone named \"{query}.\"",
+            QuickReplies = personHelper.SearchResults
+                    .Select(x => Formula(x.person.name))
                     .ToList()
-            };
-        }
+        };
     }
 }
