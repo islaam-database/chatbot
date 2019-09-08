@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
@@ -6,13 +6,18 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="IslaamDBClient" Version="0.0.15" />
+    <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.29" />
     <PackageReference Include="Google.Apis.Dialogflow.v2" Version="1.40.2.1612" />
-    <PackageReference Include="Google.Apis" Version="1.40.2" />
-    <PackageReference Include="Google.Apis.Core" Version="1.40.2" />
+    <PackageReference Include="Google.Apis" Version="1.40.3" />
+    <PackageReference Include="Google.Apis.Core" Version="1.40.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="fulfillment.cs" />
+    <None Remove="appsettings.json" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
@@ -25,8 +30,5 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="IHandler.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Handlers\" />
   </ItemGroup>
 </Project>

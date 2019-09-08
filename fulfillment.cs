@@ -4,17 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Google.Apis.Dialogflow.v2.Data;
 using islaam_db_client;
-using System.Linq;
 using System.Collections.Generic;
-using Microsoft.Build.Framework;
-using System.Globalization;
-using System;
 using idb_dialog_flow;
-using System.ComponentModel;
 
 namespace IslaamDatabase
 {
