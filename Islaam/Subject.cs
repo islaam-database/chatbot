@@ -6,6 +6,6 @@
         public string Name { get; set; }
 
         public Subject ParentSubject { get; set; }
-        public int ParentSubjectId { get; set; }
+        public int? ParentSubjectId { get; set; }
     }
 }

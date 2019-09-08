@@ -21,10 +21,10 @@ namespace Islaam
         [Required]
         public string Source { get; set; }
 
-        public int TitleId { get; set; }
+        public int? TitleId { get; set; }
         public Title Title { get; set; }
 
-        public int TopicId { get; set; }
+        public int? TopicId { get; set; }
         public Topic Topic { get; set; }
     }
 }

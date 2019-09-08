@@ -15,7 +15,7 @@ namespace Islaam
         public string Source { get; set; }
 
         public Praise MainTitle { get; set; }
-        public int MainTitleId { get; set; }
+        public int? MainTitleId { get; set; }
 
         public string FullName { get; set; }
         public string FillNameSource { get; set; }
@@ -27,10 +27,10 @@ namespace Islaam
         public string BirthYearSource { get; set; }
 
         public Generation Generation { get; set; }
-        public int GenerationId { get; set; }
+        public int? GenerationId { get; set; }
         public string GenerationSource { get; set; }
 
-        public int TaqreedId { get; set; }
+        public int? TaqreedId { get; set; }
 
         [InverseProperty("Praisee")]
         public ICollection<Praise> PraisesReceived { get; set; }
