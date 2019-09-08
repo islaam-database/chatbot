@@ -1,14 +1,15 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.Extensions.Configuration;
 namespace Islaam
 {
     public class Database : DbContext
     {
-        private readonly string ConnectionString;
         private readonly string Host = "ec2-107-22-235-119.compute-1.amazonaws.com";
         private readonly string DatabaseName = "dbb0622vq4nt5t";
         private readonly int Port = 5432;
+        private string dbUsername = Environment.GetEnvironmentVariable("IDB_USERNAME");
+        private string dbPassword = Environment.GetEnvironmentVariable("IDB_PASSWORD");
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Title> Titles { get; set; }
@@ -20,13 +21,25 @@ namespace Islaam
         public DbSet<Generation> Generations { get; set; }
         public DbSet<TeacherStudent> TeacherStudents { get; set; }
 
+        public Database() { }
+
         public Database(string dbUsername, string dbPassword)
         {
-            ConnectionString = $"User ID={dbUsername};Password={dbPassword};Host={Host};Port={Port};Database={DatabaseName};SslMode=Require;TrustServerCertificate=true;";
+            this.dbUsername = dbUsername;
+            this.dbPassword = dbPassword;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var ConnectionString = String.Join(";", new string[] {
+                 $"User ID={dbUsername}",
+                 $"Password={dbPassword}",
+                 $"Host={Host}",
+                 $"Port={Port}",
+                 $"Database={DatabaseName}",
+                 "SslMode=Require",
+                 "TrustServerCertificate=true",
+            });
             optionsBuilder.UseNpgsql(ConnectionString);
         }
     }

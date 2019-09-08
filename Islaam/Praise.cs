@@ -5,6 +5,7 @@ namespace Islaam
 {
     public class Praise
     {
+        public int Id { get; set; }
         [Required]
         public Person Praiser { get; set; }
 

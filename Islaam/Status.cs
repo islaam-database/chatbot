@@ -4,6 +4,7 @@ namespace Islaam
 {
     public class Status
     {
+        [Key]
         [Required]
         public int Rank { get; set; }
 

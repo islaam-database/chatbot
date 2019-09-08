@@ -4,7 +4,7 @@ namespace Islaam
 {
     public class Title
     {
-        public int Id;
+        public int Id { get; set; }
 
         [Required]
         public string Name { get; set; }
