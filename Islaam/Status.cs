@@ -8,5 +8,8 @@ namespace Islaam
         public int Rank { get; set; }
 
         public string Name { get; set; }
+
+        public bool MentionPraisesOfEqualStatuses { get; set; }
+        public bool MentionPraisesOfGreaterStatuses { get; set; }
     }
 }
