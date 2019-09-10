@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "idb-dialog-flow", "idb-dial
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Islaam", "Islaam\Islaam.csproj", "{1D05BECF-24FF-46B6-9307-52AF709261AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "islaam-db-client", "..\islaam-db-client-cs\islaam-db-client\islaam-db-client.csproj", "{7290D52D-1691-4F18-8832-B7D4782F3B84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,5 +21,9 @@ Global
 		{1D05BECF-24FF-46B6-9307-52AF709261AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D05BECF-24FF-46B6-9307-52AF709261AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D05BECF-24FF-46B6-9307-52AF709261AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7290D52D-1691-4F18-8832-B7D4782F3B84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7290D52D-1691-4F18-8832-B7D4782F3B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7290D52D-1691-4F18-8832-B7D4782F3B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7290D52D-1691-4F18-8832-B7D4782F3B84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

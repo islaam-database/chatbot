@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using islaam_db_client;
+using Islaam;
 using static idb_dialog_flow.Handler;
 
 namespace idb_dialog_flow
 {
     public class WhoIsHandler : SinglePersonHandler
     {
-        public WhoIsHandler(IslaamDBClient idb, IDictionary<string, object> entities)
+        public WhoIsHandler(Islaam.Database idb, IDictionary<string, object> entities)
             : base(idb, entities)
         { }
 
@@ -17,10 +16,10 @@ namespace idb_dialog_flow
         {
             get
             {
-                if (personHelper.person == null)
+                if (Person == null)
                     return PnfHandler.TextResponse;
 
-                var bio = personHelper.person.GetBio(idb);
+                var bio = Person.Bio;
 
                 if (bio.amountOfInfo <= 2)
                 {
@@ -34,21 +33,21 @@ namespace idb_dialog_flow
         {
             get
             {
-                if (personHelper.person == null)
+                if (Person == null)
                     return PnfHandler.QuickReplies;
 
-                var teacherStudents = idb.StudentsAPI.GetData();
-                var teachers = personHelper.GetTeacherNames(teacherStudents);
-                var students = personHelper.GetStudentNames(teacherStudents);
-                var searchResults = personHelper.SearchResults;
+                var teachers = Person.Teachers.ToList(); // slow?
+                var students = Person.Students.ToList();
+                var teachNames = teachers.Select(x => x.Teacher.Name).ToList();
+                var studNames = students.Select(x => x.Student.Name).ToList();
 
-                return GetFivePeopleForSuggestions(teachers, students, searchResults)
+                return GetFivePeopleForSuggestions(teachNames, studNames, SearchResults)
                     .Select(Formula)
                     .ToList();
             }
         }
 
-        protected override Func<string, string> Formula => x => $"Who is {x}?";
+        protected override string Formula(string personName) => $"Who is {personName}?";
 
         public static List<string> GetFivePeopleForSuggestions(
             List<string> teachers,
@@ -86,7 +85,7 @@ namespace idb_dialog_flow
                 var amountLeft = 5 - fivePeople.Count;
                 var remainingPeople = searchResults
                     .Take(amountLeft + 1)
-                    .Select(sr => sr.person.friendlyName);
+                    .Select(sr => sr.Person.FriendlyName);
                 fivePeople = fivePeople.Concat(remainingPeople).ToList();
             }
             return fivePeople;

@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using idb_dialog_flow;
-using islaam_db_client;
 
 namespace IslaamDatabase
 {
     internal class GetDeathYearHandler : SinglePersonHandler
     {
-        public GetDeathYearHandler(IslaamDBClient idb, IDictionary<string, object> entities)
+        public GetDeathYearHandler(Islaam.Database idb, IDictionary<string, object> entities)
             : base(idb, entities)
         {
         }
@@ -17,16 +16,16 @@ namespace IslaamDatabase
         {
             get
             {
-                if (personHelper.person == null)
+                if (Person == null)
                     return PnfHandler.TextResponse;
 
-                var deathYear = personHelper.person.deathYear;
+                var deathYear = Person.DeathYear;
 
                 if (deathYear == null)
-                    return $"Sorry. I don't what year {friendlyName} passed away.";
+                    return $"Sorry. I don't what year {Person.FriendlyName} passed away.";
 
                 return
-                    $"{friendlyName} passed away in the year {deathYear} AH.";
+                    $"{Person.FriendlyName} passed away in the year {deathYear} AH.";
             }
         }
 
@@ -34,26 +33,25 @@ namespace IslaamDatabase
         {
             get
             {
-                if (personHelper.person == null)
+                if (Person == null)
                     return PnfHandler.QuickReplies;
 
-                var allPraises = idb.PraisesAPI.GetData();
-
-                var qr = personHelper
-                    .SearchResults
+                var qr = SearchResults
                     .Take(5)
-                    .Select(x => $"When did {x.person.friendlyName} die?").ToList();
-                qr.Add($"Who praised {friendlyName}");
-                qr = qr.Concat(
-                        personHelper
-                            .GetPraiserNames(allPraises)
-                            .Select(x => $"When did {x} die?")
-                        )
+                    .Select(x => $"When did {x.Person.FriendlyName} die?").ToList();
+
+                var praiserNames = Person
+                    .PraisesReceived
+                    .Select(x => x.Praiser.Name)
+                    .Select(x => $"When did {x} die?")
                     .ToList();
+
+                qr.Add($"Who praised {Person.FriendlyName}");
+                qr = qr.Concat(praiserNames).ToList();
                 return qr;
             }
         }
 
-        protected override Func<string, string> Formula => x => $"When did {x} die?";
+        protected override string Formula(string personName) => $"When did {personName} die?";
     }
 }

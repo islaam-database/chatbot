@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using idb_dialog_flow;
-using islaam_db_client;
 
 namespace IslaamDatabase
 {
@@ -10,28 +9,31 @@ namespace IslaamDatabase
     {
         private readonly List<string> praiserNames;
 
-        public GetPraisersHandler(IslaamDBClient idb, IDictionary<string, object> entities)
+        public GetPraisersHandler(Islaam.Database idb, IDictionary<string, object> entities)
             : base(idb, entities)
         {
             this.idb = idb;
-            var allPraisers = idb.PraisesAPI.GetData();
-            praiserNames = personHelper.GetPraiserNames(allPraisers);
+            if (Person != null)
+                praiserNames = Person
+                    .PraisesReceived
+                    .Select(x => x.Praiser.Name)
+                    .ToList();
         }
 
         public override string TextResponse
         {
             get
             {
-                if (personHelper.person == null)
+                if (Person == null)
                     return PnfHandler.TextResponse;
 
                 if (praiserNames.Count == 0)
-                    return $"Sorry. I currently don't have any information on who praised {friendlyName}.";
+                    return $"Sorry. I currently don't have any information on who praised {Person.FriendlyName}.";
 
                 if (praiserNames.Count == 1)
-                    return $"{friendlyName} was praised by {praiserNames[0]}. {TAIKATM}";
+                    return $"{Person.FriendlyName} was praised by {praiserNames[0]}. {TAIKATM}";
 
-                return $"{friendlyName} was praised by {FriendlyStringJoin(praiserNames)}.";
+                return $"{Person.FriendlyName} was praised by {FriendlyStringJoin(praiserNames)}.";
             }
         }
 
@@ -39,27 +41,24 @@ namespace IslaamDatabase
         {
             get
             {
-                if (personHelper.person == null)
+                if (Person == null)
                     return PnfHandler.QuickReplies;
 
                 var defaultQRs = new List<string>()
                 {
-                    $"{friendlyName}'s students",
-                    $"{friendlyName}'s teachers",
-                    $"Who did {friendlyName} praised?",
+                    $"{Person.FriendlyName}'s students",
+                    $"{Person.FriendlyName}'s teachers",
+                    $"Who did {Person.FriendlyName} praised?",
                 };
                 var qrs = praiserNames
-                    .Concat(
-                        personHelper
-                            .SearchResults
-                            .Select(x => x.person.friendlyName)
-                    )
+                    .Concat(SearchResults.Select(x => x.Person.FriendlyName))
                     .Take(5)
                     .Select(Formula);
                 return defaultQRs.Concat(qrs).ToList();
             }
         }
 
-        protected override Func<string, string> Formula => x => $"Who praised {x}?";
+
+        protected override string Formula(string personName) => $"Who praised {personName}?";
     }
 }

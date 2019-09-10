@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using idb_dialog_flow;
-using islaam_db_client;
+using System.Collections.Generic;
 
 namespace idb_dialog_flow
 {

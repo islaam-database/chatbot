@@ -2,36 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using idb_dialog_flow;
-using islaam_db_client;
-
 namespace IslaamDatabase
 {
     public class GetTeachersHandler : SinglePersonHandler
     {
         private List<string> teacherNames;
 
-        public GetTeachersHandler(IslaamDBClient idb, IDictionary<string, object> entities)
+        public GetTeachersHandler(Islaam.Database idb, IDictionary<string, object> entities)
             : base(idb, entities)
         {
             this.idb = idb;
-            var allStudentTeachers = idb.StudentsAPI.GetData();
-            teacherNames = personHelper.GetTeacherNames(allStudentTeachers);
+            if (Person != null)
+                teacherNames = Person
+                    .Teachers
+                    .Select(x => x.Teacher.Name)
+                    .ToList();
         }
 
         public override string TextResponse
         {
             get
             {
-                if (personHelper.person == null)
+                if (Person == null)
                     return PnfHandler.TextResponse;
 
                 if (teacherNames.Count == 0)
-                    return $"Sorry. I currently don't have any information on {friendlyName}'s teachers.";
+                    return $"Sorry. I currently don't have any information on {Person.FriendlyName}'s teachers.";
 
                 if (teacherNames.Count == 1)
-                    return $"{friendlyName} was taught by {teacherNames[0]}. {TAIKATM}";
+                    return $"{Person.FriendlyName} was taught by {teacherNames[0]}. {TAIKATM}";
 
-                return $"{friendlyName} was taught by {FriendlyStringJoin(teacherNames)}.";
+                return $"{Person.FriendlyName} was taught by {FriendlyStringJoin(teacherNames)}.";
             }
         }
 
@@ -39,32 +40,26 @@ namespace IslaamDatabase
         {
             get
             {
-                if (personHelper.person == null)
+                if (Person == null)
                     return PnfHandler.QuickReplies;
 
                 var defaultQRs = new List<string>()
                 {
-                    $"{friendlyName}'s students",
-                    $"Who praised {friendlyName}?",
-                    $"Who did {friendlyName} praised?",
+                    $"{Person.FriendlyName}'s students",
+                    $"Who praised {Person.FriendlyName}?",
+                    $"Who did {Person.FriendlyName} praised?",
                 };
                 var qrs = teacherNames
-                    .Concat(
-                        personHelper
-                            .SearchResults
-                            .Select(x => x.person.friendlyName)
-                    )
+                    .Concat(SearchResults.Select(x => x.Person.FriendlyName))
                     .Take(5)
-                    .Select(DefaultUtterance);
+                    .Select(Formula);
                 return defaultQRs.Concat(qrs).ToList();
             }
         }
 
-        protected override Func<string, string> Formula => x => $"Who taught {x}";
-
-        public static string DefaultUtterance(string person)
+        protected override string Formula(string personName)
         {
-            return $"Who taught {person}?";
+            return $"Who taught {personName}?";
         }
     }
 }

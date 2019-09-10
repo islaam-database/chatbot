@@ -3,15 +3,17 @@ using System;
 using Islaam;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Islaam.Migrations
 {
     [DbContext(typeof(Database))]
-    partial class DatabaseModelSnapshot : ModelSnapshot
+    [Migration("20190908205758_StudentAndTeacherId")]
+    partial class StudentAndTeacherId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,9 +165,6 @@ namespace Islaam.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Source")
-                        .IsRequired();
-
                     b.Property<int?>("StudentId");
 
                     b.Property<int?>("SubjectId");
@@ -191,11 +190,11 @@ namespace Islaam.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<int?>("StatusId");
+                    b.Property<int?>("StatusRank");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StatusId");
+                    b.HasIndex("StatusRank");
 
                     b.ToTable("Titles");
                 });
@@ -281,8 +280,8 @@ namespace Islaam.Migrations
             modelBuilder.Entity("Islaam.Title", b =>
                 {
                     b.HasOne("Islaam.Status", "Status")
-                        .WithMany("Titles")
-                        .HasForeignKey("StatusId");
+                        .WithMany()
+                        .HasForeignKey("StatusRank");
                 });
 
             modelBuilder.Entity("Islaam.Topic", b =>

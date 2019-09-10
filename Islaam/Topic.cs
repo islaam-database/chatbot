@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Islaam
 {
@@ -7,8 +8,9 @@ namespace Islaam
         public int Id { get; set; }
 
         [Required]
-        public string Name;
+        public string Name { get; set; }
 
-        public Topic ParentTopic;
+        public Topic ParentTopic { get; set; }
+        public List<Topic> ChildTopics { get; set; }
     }
 }

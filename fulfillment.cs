@@ -6,7 +6,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Google.Apis.Dialogflow.v2.Data;
-using islaam_db_client;
 using System.Collections.Generic;
 using idb_dialog_flow;
 
@@ -18,7 +17,8 @@ namespace IslaamDatabase
 
         [FunctionName("fulfillment")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]
+            HttpRequest req
         )
         {
             var googleApiKey = (string)req.Query["google-api-key"];
@@ -27,7 +27,7 @@ namespace IslaamDatabase
             if (googleApiKey == null)
                 return new BadRequestObjectResult("Missing 'google-api-key' as a parameter.");
 
-            var idb = new IslaamDBClient(googleApiKey);
+            var idb = new Islaam.Database();
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var fulfillmentRequest = JsonConvert.DeserializeObject<GoogleCloudDialogflowV2WebhookRequest>(requestBody);
             var intent = fulfillmentRequest.QueryResult.Intent.DisplayName;
@@ -63,7 +63,7 @@ namespace IslaamDatabase
             return new OkObjectResult(response);
         }
 
-        private static Handler GetHandler(IslaamDBClient idb, string intent, IDictionary<string, object> entities)
+        private static Handler GetHandler(Islaam.Database idb, string intent, IDictionary<string, object> entities)
         {
             if (intent == Intents.WHO_IS) return new WhoIsHandler(idb, entities);
             if (intent == Intents.GET_TEACHERS) return new GetTeachersHandler(idb, entities);
