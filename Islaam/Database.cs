@@ -11,8 +11,8 @@ namespace Islaam
         private readonly string DatabaseName = "dbb0622vq4nt5t";
         private readonly int Port = 5432;
 
-        private readonly string dbUsername = Environment.GetEnvironmentVariable("IDB_USERNAME", EnvironmentVariableTarget.Process);
-        private readonly string dbPassword = Environment.GetEnvironmentVariable("IDB_PASSWORD", EnvironmentVariableTarget.Process);
+        private readonly string dbUsername = Environment.GetEnvironmentVariable("APPSETTING_IDB_USERNAME", EnvironmentVariableTarget.Process);
+        private readonly string dbPassword = Environment.GetEnvironmentVariable("APPSETTING_IDB_PASSWORD", EnvironmentVariableTarget.Process);
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Title> Titles { get; set; }
