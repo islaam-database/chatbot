@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using idb_dialog_flow;
+using Microsoft.EntityFrameworkCore;
 
 namespace IslaamDatabase
 {
@@ -12,10 +13,20 @@ namespace IslaamDatabase
             : base(idb, entities)
         {
             this.idb = idb;
-            praiseeNames = Person
-                .PraisesGiven
-                .Select(x => x.Praisee.Name)
-                .ToList();
+            if (Person != null)
+            {
+                Person = idb
+                    .People
+                    .Include(p => p.PraisesGiven)
+                    .Where(p => p.Id == Person.Id)
+                    .First();
+
+                praiseeNames = Person
+                    .PraisesGiven
+                    .Select(x => x.Praisee.Name)
+                    .Distinct()
+                    .ToList();
+            }
         }
 
         public override string TextResponse

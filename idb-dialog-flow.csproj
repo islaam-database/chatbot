@@ -17,6 +17,31 @@
   <ItemGroup>
     <None Remove="fulfillment.cs" />
     <None Remove="appsettings.json" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\Islaam.dll" />
+    <None Remove="MigrateFromSheetsToPG\obj\MigrateFromSheetsToPG.csproj.nuget.dgspec.json" />
+    <None Remove="MigrateFromSheetsToPG\obj\MigrateFromSheetsToPG.csproj.nuget.g.targets" />
+    <None Remove="MigrateFromSheetsToPG\obj\project.assets.json" />
+    <None Remove="MigrateFromSheetsToPG\obj\MigrateFromSheetsToPG.csproj.nuget.g.props" />
+    <None Remove="MigrateFromSheetsToPG\obj\MigrateFromSheetsToPG.csproj.nuget.cache" />
+    <None Remove="MigrateFromSheetsToPG\obj\Debug\netcoreapp2.2\MigrateFromSheetsToPG.pdb" />
+    <None Remove="MigrateFromSheetsToPG\obj\Debug\netcoreapp2.2\MigrateFromSheetsToPG.csproj.CopyComplete" />
+    <None Remove="MigrateFromSheetsToPG\obj\Debug\netcoreapp2.2\MigrateFromSheetsToPG.csproj.CoreCompileInputs.cache" />
+    <None Remove="MigrateFromSheetsToPG\obj\Debug\netcoreapp2.2\MigrateFromSheetsToPG.dll" />
+    <None Remove="MigrateFromSheetsToPG\obj\Debug\netcoreapp2.2\MigrateFromSheetsToPG.csproj.FileListAbsolute.txt" />
+    <None Remove="MigrateFromSheetsToPG\obj\Debug\netcoreapp2.2\MigrateFromSheetsToPG.csprojAssemblyReference.cache" />
+    <None Remove="MigrateFromSheetsToPG\obj\Debug\netcoreapp2.2\MigrateFromSheetsToPG.assets.cache" />
+    <None Remove="MigrateFromSheetsToPG\obj\Debug\netcoreapp2.2\MigrateFromSheetsToPG.AssemblyInfoInputs.cache" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\MigrateFromSheetsToPG.pdb" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\MigrateFromSheetsToPG.runtimeconfig.dev.json" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\xunit.runner.reporters.netcoreapp10.dll" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\islaam-db-client.dll" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\xunit.runner.visualstudio.dotnetcore.testadapter.dll" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\MigrateFromSheetsToPG.deps.json" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\xunit.runner.utility.netcoreapp10.dll" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\MigrateFromSheetsToPG.runtimeconfig.json" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\islaam-db-client.pdb" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\MigrateFromSheetsToPG.dll" />
+    <None Remove="MigrateFromSheetsToPG\bin\Debug\netcoreapp2.2\Islaam.pdb" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
@@ -29,5 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="IHandler.cs" />
+    <Compile Remove="MigrateFromSheetsToPG\Program.cs" />
+    <Compile Remove="MigrateFromSheetsToPG\obj\Debug\netcoreapp2.2\MigrateFromSheetsToPG.AssemblyInfo.cs" />
   </ItemGroup>
 </Project>

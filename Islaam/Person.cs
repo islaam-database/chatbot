@@ -15,7 +15,7 @@ namespace Islaam
 
         public string Source { get; set; }
 
-        public Praise MainTitle { get; set; }
+        public Title MainTitle { get; set; }
         public int? MainTitleId { get; set; }
         public string MainTitleSource { get; set; }
 
@@ -46,18 +46,18 @@ namespace Islaam
         public string LocationSource { get; set; }
 
         [InverseProperty("Student")]
-        public List<TeacherStudent> Teachers { get; set; }
+        public ICollection<TeacherStudent> Teachers { get; set; }
 
         [InverseProperty("Teacher")]
-        public List<TeacherStudent> Students { get; set; }
+        public ICollection<TeacherStudent> Students { get; set; }
 
-        public List<Book> BooksAuthored { get; set; }
+        public ICollection<Book> BooksAuthored { get; set; }
 
         public string FriendlyName
         {
             get
             {
-                if (MainTitle != null) return MainTitle.Title.Name + " " + Name;
+                if (MainTitle != null) return MainTitle.Name + " " + Name;
                 return Name;
             }
         }
@@ -73,18 +73,22 @@ namespace Islaam
                 var biography = $"{pronoun} is ";
                 var praisesReceived = PraisesReceived.ToList();
                 var titles = praisesReceived
-                    .Select(p => p.Title.Name)
+                    .Select(p => p.Title?.Name)
+                    .Where(t => t != null)
                     .Distinct()
                     .ToList();
                 var praiserNames = FriendlyJoin(
-                    praisesReceived.Select(x => x.Praiser.Name).ToList()
+                    praisesReceived
+                    .Select(x => x.Praiser.FriendlyName)
+                    .Distinct()
+                    .ToList()
                 );
                 var teacherNames = Teachers
-                    .Select(t => t.Teacher.Name)
+                    .Select(t => t.Teacher.FriendlyName)
                     .Distinct()
                     .ToList();
                 var studentNames = Students
-                    .Select(t => t.Student.Name)
+                    .Select(t => t.Student.FriendlyName)
                     .Distinct()
                     .ToList();
 
@@ -126,7 +130,7 @@ namespace Islaam
 
                 // praises
                 if (hasPraises)
-                    biography += $"{pronoun} was praised by (including students of knowledge) {praiserNames}. ";
+                    biography += $"{pronoun} was praised by {praiserNames}. ";
 
                 // teachers
                 if (hasTeachers)

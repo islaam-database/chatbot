@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Islaam
 {
@@ -11,10 +13,6 @@ namespace Islaam
 
         public Status Status { get; set; }
         public int? StatusId { get; set; }
-
-        public string TestFunction()
-        {
-            return "test return value";
-        }
+        public ICollection<Person> PeopleWithThisTitle { get; set; }
     }
 }

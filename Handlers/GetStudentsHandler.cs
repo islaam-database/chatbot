@@ -2,20 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using idb_dialog_flow;
+using Microsoft.EntityFrameworkCore;
 
 namespace IslaamDatabase
 {
     public class GetStudentsHandler : SinglePersonHandler
     {
-        private List<string> studentNames;
+        private readonly List<string> studentNames;
         public GetStudentsHandler(Islaam.Database idb, IDictionary<string, object> entities)
             : base(idb, entities)
         {
             this.idb = idb;
-            studentNames = Person
-                .Students
-                .Select(x => x.Student.Name)
-                .ToList();
+            if (Person != null)
+            {
+                Person = idb
+                    .People
+                    .Include(p => p.Students)
+                    .Where(p => p.Id == Person.Id)
+                    .First();
+
+                studentNames = Person
+                    .Students
+                    .Select(x => x.Student.Name)
+                    .Distinct()
+                    .ToList();
+            }
         }
 
         public override string TextResponse

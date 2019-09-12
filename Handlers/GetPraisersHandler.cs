@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using idb_dialog_flow;
+using Microsoft.EntityFrameworkCore;
 
 namespace IslaamDatabase
 {
@@ -14,10 +15,19 @@ namespace IslaamDatabase
         {
             this.idb = idb;
             if (Person != null)
+            {
+                Person = idb
+                    .People
+                    .Include(p => p.PraisesReceived)
+                    .Where(p => p.Id == Person.Id)
+                    .FirstOrDefault();
+
                 praiserNames = Person
                     .PraisesReceived
                     .Select(x => x.Praiser.Name)
+                    .Distinct()
                     .ToList();
+            }
         }
 
         public override string TextResponse
@@ -48,7 +58,7 @@ namespace IslaamDatabase
                 {
                     $"{Person.FriendlyName}'s students",
                     $"{Person.FriendlyName}'s teachers",
-                    $"Who did {Person.FriendlyName} praised?",
+                    $"Who did {Person.FriendlyName} praise?",
                 };
                 var qrs = praiserNames
                     .Concat(SearchResults.Select(x => x.Person.FriendlyName))

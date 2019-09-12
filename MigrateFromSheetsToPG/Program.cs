@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using islaam_db_client;
 
 namespace MigrateFromSheetsToPG
 {
@@ -9,8 +8,8 @@ namespace MigrateFromSheetsToPG
     {
         static void Main(string[] args)
         {
-            var sheetsDb = new IslaamDBClient("AIzaSyAyKho7TCDQkvI6uVWj634FVsEL_iiP-Ps");
-            var pgDB = new Islaam.Database();
+            //var sheetsDb = new IslaamDBClient("AIzaSyAyKho7TCDQkvI6uVWj634FVsEL_iiP-Ps");
+            //var pgDB = new Islaam.Database();
             if (false)
             {
                 var data = sheetsDb.StudentsAPI.GetData();

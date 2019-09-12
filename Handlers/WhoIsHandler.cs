@@ -2,15 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using Islaam;
+using Microsoft.EntityFrameworkCore;
 using static idb_dialog_flow.Handler;
 
 namespace idb_dialog_flow
 {
     public class WhoIsHandler : SinglePersonHandler
     {
-        public WhoIsHandler(Islaam.Database idb, IDictionary<string, object> entities)
+        public WhoIsHandler(Database idb, IDictionary<string, object> entities)
             : base(idb, entities)
-        { }
+        {
+
+            Person = idb
+                .People
+                .Include(p => p.Teachers)
+                    .ThenInclude(ts => ts.Teacher)
+                    // TODO: 1. Import from sheets. 2... test if this is necessary since it's already "included
+                        .ThenInclude(p => p.MainTitle)
+                .Include(p => p.Students)
+                    .ThenInclude(ts => ts.Student)
+                        .ThenInclude(p => p.MainTitle)
+                .Include(p => p.PraisesReceived)
+                    .ThenInclude(p => p.Title)
+                .Include(p => p.MainTitle)
+                .Where(p => p.Id == Person.Id)
+                .FirstOrDefault();
+        }
 
         public override string TextResponse
         {
