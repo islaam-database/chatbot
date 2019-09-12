@@ -21,12 +21,6 @@ namespace IslaamDatabase
             HttpRequest req
         )
         {
-            var googleApiKey = (string)req.Query["google-api-key"];
-
-            // if no API KEY
-            if (googleApiKey == null)
-                return new BadRequestObjectResult("Missing 'google-api-key' as a parameter.");
-
             var idb = new Islaam.Database();
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var fulfillmentRequest = JsonConvert.DeserializeObject<GoogleCloudDialogflowV2WebhookRequest>(requestBody);
