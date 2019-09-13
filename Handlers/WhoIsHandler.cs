@@ -17,13 +17,14 @@ namespace idb_dialog_flow
                 .People
                 .Include(p => p.Teachers)
                     .ThenInclude(ts => ts.Teacher)
-                    // TODO: 1. Import from sheets. 2... test if this is necessary since it's already "included
+                        // TODO: 1. Import from sheets. 2... test if this is necessary since it's already "included
                         .ThenInclude(p => p.MainTitle)
                 .Include(p => p.Students)
                     .ThenInclude(ts => ts.Student)
                         .ThenInclude(p => p.MainTitle)
                 .Include(p => p.PraisesReceived)
-                    .ThenInclude(p => p.Title)
+                    .ThenInclude(p => p.Praiser)
+                        .ThenInclude(p => p.MainTitle)
                 .Include(p => p.MainTitle)
                 .Where(p => p.Id == Person.Id)
                 .FirstOrDefault();
