@@ -14,6 +14,6 @@ namespace Islaam
         public bool MentionPraisesOfEqualStatuses { get; set; }
         public bool MentionPraisesOfGreaterStatuses { get; set; }
 
-        public List<Title> Titles { get; set; }
+        public ICollection<Title> Titles { get; set; }
     }
 }

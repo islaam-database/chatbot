@@ -57,8 +57,37 @@ namespace Islaam
         {
             get
             {
-                if (MainTitle != null) return MainTitle.Name + " " + Name;
-                return Name;
+                var temp = new List<string>();
+                if (MainTitle != null) temp.Add(MainTitle.Name);
+                temp.Add(Name);
+                if (DeathYear != null) temp.Add($" (d. {DeathYear} AH)");
+                return string.Join(' ', temp);
+            }
+        }
+
+        public PraisesReceivedbyRank PraisesReceivedbyRank;
+
+        public Status HighestStatus
+        {
+            get
+            {
+                var titles = PraisesReceived
+                    .Select(p => p.Title)
+                    .Where(t => t != null)
+                    .ToList();
+                var uniqueTitles = titles
+                    .GroupBy(p => p.Name)
+                    .Select(c => c.FirstOrDefault())
+                    .ToList();
+                var statuses = titles
+                    .Where(t => t != null)
+                    .Where(t => t.Status != null)
+                    .Select(t => t.Status)
+                    .ToList();
+                var highest = statuses
+                    .OrderBy(s => s.Rank)
+                    .FirstOrDefault();
+                return highest;
             }
         }
 
@@ -71,14 +100,14 @@ namespace Islaam
 
                 // start
                 var biography = $"{pronoun} is ";
-                var praisesReceived = PraisesReceived.ToList();
-                var titles = praisesReceived
-                    .Select(p => p.Title?.Name)
-                    .Where(t => t != null)
-                    .Distinct()
-                    .ToList();
+                var praisesReceivedConsideringStatus = GetPraisesReceived();
+                var titles = praisesReceivedConsideringStatus
+                        .Select(p => p.Title?.Name)
+                        .Where(t => t != null)
+                        .Distinct()
+                        .ToList();
                 var praiserNames = FriendlyJoin(
-                    praisesReceived
+                    praisesReceivedConsideringStatus
                     .Select(x => x.Praiser.FriendlyName)
                     .Distinct()
                     .ToList()
@@ -93,7 +122,7 @@ namespace Islaam
                     .ToList();
 
                 // booleans
-                var hasPraises = praisesReceived.Count > 0;
+                var hasPraises = praisesReceivedConsideringStatus.Count > 0;
                 var hasTitles = titles.Count > 0;
                 var hasLocation = Location != null;
                 var hasKunya = FullName != null;
@@ -155,7 +184,31 @@ namespace Islaam
                     text = biography,
                     amountOfInfo = amountOfInfo,
                 };
+                IList<Praise> GetPraisesReceived()
+                {
+                    List<Praise> praises = new List<Praise>();
+                    if (HighestStatus == null)
+                        return PraisesReceived.ToList();
 
+                    if (HighestStatus.MentionPraisesOfGreaterStatuses)
+                    {
+                        praises = praises
+                            .Concat(
+                                PraisesReceived
+                                    .Where(p => p.Praiser.HighestStatus != null && p.Praiser.HighestStatus.Rank > HighestStatus.Rank)
+                            )
+                            .ToList();
+                    }
+                    if (HighestStatus.MentionPraisesOfEqualStatuses)
+                    {
+                        praises = praises
+                            .Concat(
+                                PraisesReceived.Where(p => p.Praiser.HighestStatus != null && p.Praiser.HighestStatus.Rank == HighestStatus.Rank)
+                            )
+                            .ToList();
+                    }
+                    return praises;
+                }
                 int GetAmountOfInfo()
                 {
                     return new bool[] {
@@ -170,7 +223,6 @@ namespace Islaam
                         hasGeneration
                     }.Count();
                 }
-
                 string FriendlyJoin(List<string> list)
                 {
                     if (list.Count == 0) return null;
@@ -182,11 +234,19 @@ namespace Islaam
             }
         }
 
+
     }
 
     public class BioInfo
     {
         public int amountOfInfo;
         public string text;
+    }
+
+    public class PraisesReceivedbyRank
+    {
+        public IEnumerable<Praise> Higher { get; set; }
+        public IEnumerable<Praise> Equal { get; set; }
+        public IEnumerable<Praise> Lower { get; set; }
     }
 }
