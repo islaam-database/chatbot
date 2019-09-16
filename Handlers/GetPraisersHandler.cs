@@ -19,11 +19,17 @@ namespace IslaamDatabase
                 Person = idb
                     .People
                     .Include(p => p.PraisesReceived)
+                        .ThenInclude(x => x.Praiser)
+                            .ThenInclude(x => x.PraisesReceived)
+                                .ThenInclude(x => x.Praiser)
+                    .Include(p => p.PraisesReceived)
+                        .ThenInclude(x => x.Title)
+                            .ThenInclude(x => x.Status)
                     .Where(p => p.Id == Person.Id)
                     .FirstOrDefault();
 
                 praiserNames = Person
-                    .PraisesReceived
+                    .GetPraisesReceivedConsideringStatus()
                     .Select(x => x.Praiser.Name)
                     .Distinct()
                     .ToList();

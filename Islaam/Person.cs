@@ -65,12 +65,11 @@ namespace Islaam
             }
         }
 
-        public PraisesReceivedbyRank PraisesReceivedbyRank;
-
-        public Status HighestStatus
+        public virtual Status HighestStatus
         {
             get
             {
+                if (PraisesReceived == null) return null;
                 var titles = PraisesReceived
                     .Select(p => p.Title)
                     .Where(t => t != null)
@@ -97,17 +96,16 @@ namespace Islaam
             {
                 var pronoun = UseMascPron ? "He" : "She";
                 var possesivePronoun = UseMascPron ? "His" : "Her";
-
+                var PraisesReceivedConsideringStatus = GetPraisesReceivedConsideringStatus();
                 // start
                 var biography = $"{pronoun} is ";
-                var praisesReceivedConsideringStatus = GetPraisesReceived();
-                var titles = praisesReceivedConsideringStatus
+                var titles = PraisesReceived
                         .Select(p => p.Title?.Name)
                         .Where(t => t != null)
                         .Distinct()
                         .ToList();
                 var praiserNames = FriendlyJoin(
-                    praisesReceivedConsideringStatus
+                    PraisesReceivedConsideringStatus
                     .Select(x => x.Praiser.FriendlyName)
                     .Distinct()
                     .ToList()
@@ -122,7 +120,7 @@ namespace Islaam
                     .ToList();
 
                 // booleans
-                var hasPraises = praisesReceivedConsideringStatus.Count > 0;
+                var hasPraises = PraisesReceivedConsideringStatus.Count > 0;
                 var hasTitles = titles.Count > 0;
                 var hasLocation = Location != null;
                 var hasKunya = FullName != null;
@@ -184,31 +182,6 @@ namespace Islaam
                     text = biography,
                     amountOfInfo = amountOfInfo,
                 };
-                IList<Praise> GetPraisesReceived()
-                {
-                    List<Praise> praises = new List<Praise>();
-                    if (HighestStatus == null)
-                        return PraisesReceived.ToList();
-
-                    if (HighestStatus.MentionPraisesOfGreaterStatuses)
-                    {
-                        praises = praises
-                            .Concat(
-                                PraisesReceived
-                                    .Where(p => p.Praiser.HighestStatus != null && p.Praiser.HighestStatus.Rank > HighestStatus.Rank)
-                            )
-                            .ToList();
-                    }
-                    if (HighestStatus.MentionPraisesOfEqualStatuses)
-                    {
-                        praises = praises
-                            .Concat(
-                                PraisesReceived.Where(p => p.Praiser.HighestStatus != null && p.Praiser.HighestStatus.Rank == HighestStatus.Rank)
-                            )
-                            .ToList();
-                    }
-                    return praises;
-                }
                 int GetAmountOfInfo()
                 {
                     return new bool[] {
@@ -234,19 +207,39 @@ namespace Islaam
             }
         }
 
+        public IList<Praise> GetPraisesReceivedConsideringStatus()
+        {
+            if (PraisesReceived == null) return null;
+
+            List<Praise> praises = new List<Praise>();
+            if (HighestStatus == null)
+                return PraisesReceived.ToList();
+
+            if (HighestStatus.MentionPraisesOfGreaterStatuses)
+            {
+                praises = praises
+                    .Concat(
+                        PraisesReceived
+                            .Where(p => p.Praiser.HighestStatus != null && p.Praiser.HighestStatus.Rank > HighestStatus.Rank)
+                    )
+                    .ToList();
+            }
+            if (HighestStatus.MentionPraisesOfEqualStatuses)
+            {
+                praises = praises
+                    .Concat(
+                        PraisesReceived
+                            .Where(p => p.Praiser.HighestStatus != null && p.Praiser.HighestStatus.Rank == HighestStatus.Rank)
+                    )
+                    .ToList();
+            }
+            return praises;
+        }
 
     }
-
     public class BioInfo
     {
         public int amountOfInfo;
         public string text;
-    }
-
-    public class PraisesReceivedbyRank
-    {
-        public IEnumerable<Praise> Higher { get; set; }
-        public IEnumerable<Praise> Equal { get; set; }
-        public IEnumerable<Praise> Lower { get; set; }
     }
 }

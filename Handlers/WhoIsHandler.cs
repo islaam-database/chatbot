@@ -11,15 +11,8 @@ namespace idb_dialog_flow
         public WhoIsHandler(Database idb, IDictionary<string, object> entities)
             : base(idb, entities)
         {
-
             Person = idb
                 .People
-                .Include(p => p.Teachers)
-                    .ThenInclude(ts => ts.Teacher)
-                        .ThenInclude(p => p.MainTitle)
-                .Include(p => p.Students)
-                    .ThenInclude(ts => ts.Student)
-                        .ThenInclude(p => p.MainTitle)
                 .Include(p => p.PraisesReceived)
                     .ThenInclude(p => p.Praiser)
                         .ThenInclude(p => p.MainTitle)
@@ -33,6 +26,12 @@ namespace idb_dialog_flow
                             .ThenInclude(p => p.Praiser)
                                 .ThenInclude(p => p.MainTitle)
                                     .ThenInclude(p => p.Status)
+                .Include(p => p.Teachers)
+                    .ThenInclude(ts => ts.Teacher)
+                        .ThenInclude(p => p.MainTitle)
+                .Include(p => p.Students)
+                    .ThenInclude(ts => ts.Student)
+                        .ThenInclude(p => p.MainTitle)
                 .Include(p => p.MainTitle)
                     .ThenInclude(p => p.Status)
                 .Where(p => p.Id == Person.Id)
