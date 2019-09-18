@@ -13,7 +13,7 @@ namespace Islaam
 
         public bool MentionPraisesOfEqualStatuses { get; set; }
         public bool MentionPraisesOfGreaterStatuses { get; set; }
-
         public ICollection<Title> Titles { get; set; }
+        public Generation Generations { get; set; }
     }
 }

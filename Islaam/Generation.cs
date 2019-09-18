@@ -8,5 +8,7 @@ namespace Islaam
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
+        public Status Status { get; set; }
+        public int? StatusId { get; set; }
     }
 }
