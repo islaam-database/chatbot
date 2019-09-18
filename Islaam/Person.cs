@@ -65,7 +65,7 @@ namespace Islaam
             }
         }
 
-        public virtual Status HighestStatus
+        public virtual Status Status
         {
             get
             {
@@ -212,24 +212,24 @@ namespace Islaam
             if (PraisesReceived == null) return null;
 
             List<Praise> praises = new List<Praise>();
-            if (HighestStatus == null)
-                return PraisesReceived.ToList();
+            if (Status == null)
+                return praises;
 
-            if (HighestStatus.MentionPraisesOfGreaterStatuses)
+            if (Status.MentionPraisesOfGreaterStatuses)
             {
                 praises = praises
                     .Concat(
                         PraisesReceived
-                            .Where(p => p.Praiser.HighestStatus != null && p.Praiser.HighestStatus.Rank > HighestStatus.Rank)
+                            .Where(p => p.Praiser.Status != null && p.Praiser.Status.Rank > Status.Rank)
                     )
                     .ToList();
             }
-            if (HighestStatus.MentionPraisesOfEqualStatuses)
+            if (Status.MentionPraisesOfEqualStatuses)
             {
                 praises = praises
                     .Concat(
                         PraisesReceived
-                            .Where(p => p.Praiser.HighestStatus != null && p.Praiser.HighestStatus.Rank == HighestStatus.Rank)
+                            .Where(p => p.Praiser.Status != null && p.Praiser.Status.Rank == Status.Rank)
                     )
                     .ToList();
             }
