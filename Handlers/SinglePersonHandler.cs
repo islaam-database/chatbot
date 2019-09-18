@@ -27,7 +27,7 @@ namespace idb_dialog_flow
         {
             TextResponse = $"Sorry. I don't know anyone named \"{query}.\"",
             QuickReplies = SearchResults
-                    .Select(x => Formula(x.Person.Name))
+                    .Select(x => Formula(x.Person.FriendlyName))
                     .ToList()
         };
 
