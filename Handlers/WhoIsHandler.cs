@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Islaam;
 using Microsoft.EntityFrameworkCore;
@@ -64,12 +65,14 @@ namespace idb_dialog_flow
 
                 var teachers = Person.Teachers.ToList(); // slow?
                 var students = Person.Students.ToList();
-                var teachNames = teachers.Select(x => x.Teacher.Name).ToList();
-                var studNames = students.Select(x => x.Student.Name).ToList();
+                var teachNames = teachers.Select(x => x.Teacher.FriendlyName).ToList();
+                var studNames = students.Select(x => x.Student.FriendlyName).ToList();
 
-                return GetFivePeopleForSuggestions(teachNames, studNames, SearchResults)
+                var suggestions = GetFivePeopleForSuggestions(teachNames, studNames, SearchResults)
                     .Select(Formula)
                     .ToList();
+
+                return suggestions;
             }
         }
 

@@ -48,7 +48,7 @@ namespace Islaam
 
         public List<PersonSearchResult> SearchForPerson(string query)
         {
-            var data = People.Include(p => p.MainTitle);
+            var data = People;
             var resultsQuery = data
                 .Select(p => new PersonSearchResult
                 {
